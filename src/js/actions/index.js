@@ -62,12 +62,17 @@ export function addFailedRepo(failedRepo) {
   };
 }
 
+
+const GEMINI_TEAM = ['musiichuk', 'faichuk', 'oleg9952', 'dtereshenko'];
+
+const byGeminiMembership = pr => GEMINI_TEAM.includes(pr.user.username);
+
 export function loadPullRequests() {
   return (dispatch, getState) => {
     const { sortOptions } = getState();
     dispatch({ type: ActionTypes.START_LOADING });
     return axios.get('/pulls').then(response => {
-      dispatch(addPullRequests(response.data.pullRequests, sortOptions));
+      dispatch(addPullRequests(response.data.pullRequests.filter(byGeminiMembership), sortOptions));
       dispatch(setRepos(response.data.repos));
       dispatch(setTitle(response.data.title || 'Pull Requests'));
     }).catch(() => {
